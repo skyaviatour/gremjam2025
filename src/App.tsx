@@ -21,7 +21,7 @@ function App() {
 	console.log(state);
 
 	return (
-		<Application width={640} height={480}>
+		<Application width={800} height={600}>
 			<TitleScene visible={state.titleSceneActive} coordinator={dispatch} />
 			<GameScene visible={state.gameSceneActive} coordinator={dispatch} />
 			<PauseScene visible={state.pauseSceneActive} coordinator={dispatch} />
