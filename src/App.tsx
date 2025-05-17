@@ -1,5 +1,5 @@
 import { Application, extend } from "@pixi/react";
-import { Container, Graphics } from "pixi.js";
+import { Container, Graphics, Sprite } from "pixi.js";
 import TitleScene from "./scenes/TitleScene";
 import GameScene from "./scenes/GameScene";
 import { useReducer } from "react";
@@ -9,6 +9,7 @@ import PauseScene from "./scenes/PauseScene";
 extend({
 	Container,
 	Graphics,
+	Sprite,
 });
 
 function App() {
@@ -18,10 +19,13 @@ function App() {
 		pauseSceneActive: false,
 	});
 
-	console.log(state);
-
 	return (
-		<Application width={800} height={600}>
+		<Application
+			width={800}
+			height={600}
+			background="#3f3f3f"
+			eventMode="static"
+		>
 			<TitleScene visible={state.titleSceneActive} coordinator={dispatch} />
 			<GameScene visible={state.gameSceneActive} coordinator={dispatch} />
 			<PauseScene visible={state.pauseSceneActive} coordinator={dispatch} />
