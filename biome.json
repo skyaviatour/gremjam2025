@@ -4,6 +4,10 @@
 		"rules": { "recommended": false },
 		"ignore": ["dist"]
 	},
+	"formatter": {
+		"indentStyle": "space",
+		"indentWidth": 4
+	},
 	"overrides": [
 		{
 			"include": ["**/*.{ts,tsx}"],

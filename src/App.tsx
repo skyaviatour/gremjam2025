@@ -1,5 +1,5 @@
 import { Application, extend } from "@pixi/react";
-import { Container, Graphics, Sprite } from "pixi.js";
+import { BitmapText, Container, Graphics, Sprite } from "pixi.js";
 import TitleScene from "./scenes/TitleScene";
 import GameScene from "./scenes/GameScene";
 import { useReducer } from "react";
@@ -10,6 +10,7 @@ extend({
 	Container,
 	Graphics,
 	Sprite,
+	BitmapText,
 });
 
 function App() {

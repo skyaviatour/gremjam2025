@@ -1,114 +1,170 @@
-import { useApplication, useTick } from "@pixi/react";
-import { Assets, Rectangle, Sprite, Texture, type Graphics } from "pixi.js";
+import { useApplication } from "@pixi/react";
+import { Graphics, Rectangle, Sprite, Text, Texture } from "pixi.js";
 import { useCallback, useEffect, useRef, useState, type Dispatch } from "react";
 import type { SceneAction } from "../reducers/sceneReducer";
+import { useGraphics } from "../hooks/useGraphics";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { useSprites } from "../hooks/useSprites";
 
 type Props = {
-	visible?: boolean;
-	coordinator: Dispatch<SceneAction>;
+    visible?: boolean;
+    coordinator: Dispatch<SceneAction>;
 };
 
 export default function GameScene({ visible, coordinator }: Props) {
-	const { app } = useApplication();
-	const [elapsed, setElapsed] = useState(0);
-	const [grem1, setGrem1] = useState(Texture.EMPTY);
-	const grem1Ref = useRef<Sprite>(null);
-	const [grem2, setGrem2] = useState(Texture.EMPTY);
-	const grem2Ref = useRef<Sprite>(null);
-	const [grem3, setGrem3] = useState(Texture.EMPTY);
-	const grem3Ref = useRef<Sprite>(null);
+    const { app } = useApplication();
+    const [grem1, setGrem1] = useState(Texture.EMPTY);
+    const grem1Ref = useRef<Sprite>(null);
+    const [gremState, setGremState] = useState<"entering" | "exiting" | null>(
+        "entering",
+    );
+    const textRef = useRef<Text>(null);
+    const { sprites } = useSprites();
 
-	const pauseButtonBackgroundDraw = useCallback((g: Graphics) => {
-		g.clear();
-		g.setFillStyle(0x101010);
-		g.roundRect(0, 0, 80, 80, 8);
-		g.fill();
-		g.pivot.set(40, 40);
-	}, []);
+    useGSAP(() => {
+        if (grem1Ref.current) {
+            if (gremState === "entering") {
+                gsap.to(grem1Ref.current, {
+                    x: 400,
+                    y: 400,
+                    duration: 2,
+                    delay: 1,
+                    ease: "expo.out",
+                });
+            } else if (gremState === "exiting") {
+                gsap.to(grem1Ref.current, {
+                    x: -150,
+                    y: 400,
+                    duration: 2,
+                    delay: 0.15,
+                    ease: "expo.out",
+                    onComplete: () => {
+                        setGrem1(sprites!["grem2.png"]);
+                        setGremState("entering");
+                    },
+                });
+            }
+        }
 
-	const pauseButtonForegroundDraw = useCallback((g: Graphics) => {
-		g.clear();
-		g.setFillStyle(0x303030);
-		g.roundRect(0, 0, 20, 60);
-		g.fill();
-		g.pivot.set(10, 30);
-	}, []);
+        // this doesn't work OOTB with canvas text. review
+        if (textRef.current) {
+            gsap.to(textRef.current, {
+                duration: 5,
+                text: "Lorem ipsum algo mas no se auhoounf aowf oawhf owefoijfo ijwfo hoowjoihpiuafh oiwheof ihaweof hwo",
+            });
+        }
+    }, [grem1Ref, gremState]);
 
-	const pauseButtonClickHandler = useCallback((_ev: MouseEvent) => {
-		coordinator({ name: "swapScene", value: "pauseSceneActive" });
-	}, []);
+    // TODO: maybe load this on init and pass it via args/context?
+    useEffect(() => {
+        if (sprites && grem1 === Texture.EMPTY) setGrem1(sprites["grem1.png"]);
+    }, [grem1, sprites]);
 
-	const pointerMoveHandler = (ev: MouseEvent) => {
-		if (grem3Ref.current) {
-			grem3Ref.current.position.copyFrom(ev.global);
-		}
-	};
+    // TODO: abstract the whole pause buton?
+    const pauseButtonBackgroundDraw = useGraphics({
+        color: 0x101010,
+        width: 80,
+        height: 80,
+        radius: 8,
+    });
+    const pauseButtonForegroundDraw = useGraphics({
+        color: 0x303030,
+        width: 20,
+        height: 60,
+    });
 
-	useEffect(() => {
-		Assets.load("/sprites/spritesheet.json").then((a) => {
-			console.log(a);
-			if (grem1 === Texture.EMPTY) setGrem1(a.textures["grem1.png"]);
+    const nextButtonBackgroundDraw = useGraphics({
+        color: 0x101010,
+        width: 100,
+        height: 40,
+        radius: 6,
+    });
+    const nextButtonClickHandler = useCallback((ev) => {
+        setGremState("exiting");
+    }, []);
 
-			if (grem2 === Texture.EMPTY) setGrem2(a.textures["grem2.png"]);
+    const tableDraw = useGraphics({
+        color: 0x402101,
+        width: 200,
+        height: 100,
+        radius: 1,
+    });
 
-			if (grem3 === Texture.EMPTY) setGrem3(a.textures["grem3.png"]);
-		});
-	}, [grem1, grem2, grem3]);
+    const textBoxBackgroundDraw = useCallback((g: Graphics) => {
+        g.clear();
+        g.setFillStyle(0x202020);
+        g.roundRect(
+            0,
+            0,
+            (app.canvas.width * 11) / 12,
+            app.canvas.height / 2,
+            4,
+        );
+        g.fill();
+    }, []);
 
-	useTick({
-		callback(ticker) {
-			setElapsed((cur) => (cur += ticker.deltaTime));
-			ticker.maxFPS = 60;
-			if (grem1Ref.current)
-				grem1Ref.current.x = 200 + Math.cos(elapsed / 25) * 100;
-			if (grem2Ref.current) grem2Ref.current.angle += ticker.deltaTime * 4;
-		},
-		isEnabled: visible,
-	});
+    const pauseButtonClickHandler = useCallback((_ev: MouseEvent) => {
+        coordinator({ name: "swapScene", value: "pauseSceneActive" });
+    }, []);
 
-	return (
-		<pixiContainer
-			onMouseMove={pointerMoveHandler}
-			visible={visible ?? true}
-			hitArea={new Rectangle(0, 0, app.canvas.width, app.canvas.height)}
-			style={{ fill: 0x00ff00 }}
-		>
-			<pixiContainer>
-				<pixiSprite
-					ref={grem1Ref}
-					anchor={0.5}
-					x={100}
-					y={50}
-					scale={0.5}
-					texture={grem1}
-				/>
-				<pixiSprite
-					ref={grem2Ref}
-					anchor={0.5}
-					x={100}
-					y={150}
-					scale={0.5}
-					texture={grem2}
-				/>
-				<pixiSprite
-					ref={grem3Ref}
-					anchor={0.5}
-					x={100}
-					y={250}
-					scale={0.5}
-					texture={grem3}
-				/>
-			</pixiContainer>
-			<pixiContainer
-				interactive={true}
-				x={(app.canvas.width * 7) / 8}
-				y={app.canvas.height / 8}
-				onClick={pauseButtonClickHandler}
-			>
-				<pixiGraphics draw={pauseButtonBackgroundDraw} />
-				<pixiGraphics x={-15} draw={pauseButtonForegroundDraw} />
-				<pixiGraphics x={15} draw={pauseButtonForegroundDraw} />
-			</pixiContainer>
-		</pixiContainer>
-	);
+    return (
+        <pixiContainer
+            visible={visible ?? true}
+            hitArea={new Rectangle(0, 0, app.canvas.width, app.canvas.height)}
+            style={{ fill: 0x00ff00 }}
+        >
+            <pixiContainer x={20} y={20}>
+                <pixiGraphics
+                    pivot={{ x: 0, y: 0 }}
+                    draw={textBoxBackgroundDraw}
+                />
+                <pixiText
+                    ref={textRef}
+                    x={20}
+                    y={20}
+                    text={""}
+                    style={{
+                        fill: "white",
+                        wordWrap: true,
+                        wordWrapWidth: (app.canvas.width * 11) / 12 - 20,
+                    }}
+                />
+            </pixiContainer>
+            <pixiContainer>
+                <pixiSprite
+                    ref={grem1Ref}
+                    x={-150}
+                    y={400}
+                    anchor={0.5}
+                    texture={grem1}
+                />
+            </pixiContainer>
+            <pixiContainer
+                interactive={true}
+                x={(app.canvas.width * 7) / 8}
+                y={(app.canvas.height * 7) / 8}
+                onClick={pauseButtonClickHandler}
+            >
+                <pixiGraphics draw={pauseButtonBackgroundDraw} />
+                <pixiGraphics x={-15} draw={pauseButtonForegroundDraw} />
+                <pixiGraphics x={15} draw={pauseButtonForegroundDraw} />
+            </pixiContainer>
+            <pixiGraphics
+                x={app.canvas.width / 2}
+                y={480}
+                zIndex={2}
+                draw={tableDraw}
+            />
+            <pixiContainer
+                x={(app.canvas.width * 7) / 8}
+                y={(app.canvas.height * 8) / 12}
+                eventMode="static"
+                onClick={nextButtonClickHandler}
+            >
+                <pixiGraphics draw={nextButtonBackgroundDraw} />
+                <pixiText anchor={0.5} text="Next" style={{ fill: "white" }} />
+            </pixiContainer>
+        </pixiContainer>
+    );
 }
