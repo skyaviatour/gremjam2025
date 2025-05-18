@@ -12,6 +12,11 @@ type Props = {
     coordinator: Dispatch<SceneAction>;
 };
 
+// TODO: maybe changing the coordinator to a state machine would make more sense
+// linking execution just to visibility doesn't make sense in some cases
+// for example, execution of the entering animation happens while in the starting
+// screen, but it wouldn't make sense to pause/reset it based on visibility, otherwise
+// pausing would break everything
 export default function GameScene({ visible, coordinator }: Props) {
     const { app } = useApplication();
     const [grem1, setGrem1] = useState(Texture.EMPTY);
@@ -21,6 +26,12 @@ export default function GameScene({ visible, coordinator }: Props) {
     );
     const textRef = useRef<Text>(null);
     const { sprites } = useSprites();
+
+    const getRandomSprite = useCallback(() => {
+        if (!sprites) return Texture.EMPTY;
+        const keys = Object.keys(sprites);
+        return sprites[keys[Math.floor(Math.random() * keys.length)]];
+    }, [sprites]);
 
     useGSAP(() => {
         if (grem1Ref.current) {
@@ -40,7 +51,7 @@ export default function GameScene({ visible, coordinator }: Props) {
                     delay: 0.15,
                     ease: "expo.out",
                     onComplete: () => {
-                        setGrem1(sprites!["grem2.png"]);
+                        setGrem1(getRandomSprite());
                         setGremState("entering");
                     },
                 });
@@ -56,9 +67,10 @@ export default function GameScene({ visible, coordinator }: Props) {
         }
     }, [grem1Ref, gremState]);
 
-    // TODO: maybe load this on init and pass it via args/context?
     useEffect(() => {
-        if (sprites && grem1 === Texture.EMPTY) setGrem1(sprites["grem1.png"]);
+        if (sprites && grem1 === Texture.EMPTY) {
+            setGrem1(getRandomSprite());
+        }
     }, [grem1, sprites]);
 
     // TODO: abstract the whole pause buton?
