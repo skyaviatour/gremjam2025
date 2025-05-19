@@ -21,11 +21,15 @@ export default function GameScene({ visible, coordinator }: Props) {
     const { app } = useApplication();
     const [grem1, setGrem1] = useState(Texture.EMPTY);
     const grem1Ref = useRef<Sprite>(null);
-    const [gremState, setGremState] = useState<"entering" | "exiting" | null>(
-        "entering",
-    );
+    const [gremState, setGremState] = useState<
+        "entering" | "exiting" | "idle" | null
+    >("entering");
     const textRef = useRef<Text>(null);
-    const { sprites } = useSprites();
+    const [nextButtonStrokeWidth, setNextButtonStrokeWidth] = useState(2);
+    const [nextButtonBackground, setNextButtonBackground] = useState(0x202020);
+    const { sprites } = useSprites({
+        bundles: ["bundle"],
+    });
 
     const getRandomSprite = useCallback(() => {
         if (!sprites) return Texture.EMPTY;
@@ -42,6 +46,9 @@ export default function GameScene({ visible, coordinator }: Props) {
                     duration: 2,
                     delay: 1,
                     ease: "expo.out",
+                    onComplete: () => {
+                        setGremState("idle");
+                    },
                 });
             } else if (gremState === "exiting") {
                 gsap.to(grem1Ref.current, {
@@ -86,19 +93,26 @@ export default function GameScene({ visible, coordinator }: Props) {
         height: 60,
     });
 
-    const nextButtonBackgroundDraw = useGraphics({
-        color: 0x101010,
-        width: 100,
-        height: 40,
-        radius: 6,
-    });
-    const nextButtonClickHandler = useCallback((ev) => {
+    const nextButtonBackgroundDraw = useCallback(
+        (g: Graphics) => {
+            g.clear();
+            g.setFillStyle(nextButtonBackground);
+            g.setStrokeStyle({ color: 0xfefefe, width: nextButtonStrokeWidth });
+            g.roundRect(0, 0, 100, 40, 6);
+            g.pivot.set(50, 20);
+            g.fill();
+            g.stroke();
+        },
+        [nextButtonStrokeWidth, nextButtonBackground],
+    );
+    const nextButtonClickHandler = useCallback(() => {
+        if (gremState !== "idle") return;
         setGremState("exiting");
-    }, []);
+    }, [gremState]);
 
     const tableDraw = useGraphics({
         color: 0x402101,
-        width: 200,
+        width: 300,
         height: 100,
         radius: 1,
     });
@@ -173,6 +187,16 @@ export default function GameScene({ visible, coordinator }: Props) {
                 y={(app.canvas.height * 8) / 12}
                 eventMode="static"
                 onClick={nextButtonClickHandler}
+                onMouseEnter={() => {
+                    setNextButtonStrokeWidth(4);
+                    setNextButtonBackground(0x303030);
+                }}
+                onMouseLeave={() => {
+                    setNextButtonStrokeWidth(2);
+                    setNextButtonBackground(0x202020);
+                }}
+                onMouseDown={() => setNextButtonBackground(0x606060)}
+                onMouseUp={() => setNextButtonBackground(0x202020)}
             >
                 <pixiGraphics draw={nextButtonBackgroundDraw} />
                 <pixiText anchor={0.5} text="Next" style={{ fill: "white" }} />

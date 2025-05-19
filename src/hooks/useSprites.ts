@@ -1,14 +1,21 @@
 import { Assets } from "pixi.js";
 import { useEffect, useState } from "react";
 
-export function useSprites() {
+type Options = {
+    bundles: string[];
+};
+
+export function useSprites({ bundles }: Options) {
     const [sprites, setSprites] = useState(null);
+    const [items, setItems] = useState(null);
 
     useEffect(() => {
-        Assets.load("/sprites/spritesheet.json").then((a) =>
-            setSprites(a.textures),
-        );
-    });
+        Assets.loadBundle(bundles).then((a) => {
+            console.log(a);
+            setSprites(a.bundle.sprites.textures);
+            setItems(a.bundle.items.textures);
+        });
+    }, []);
 
-    return { sprites };
+    return { sprites, items };
 }
