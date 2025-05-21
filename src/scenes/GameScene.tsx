@@ -1,5 +1,5 @@
 import { useApplication } from "@pixi/react";
-import { Graphics, Rectangle, Sprite, Text, Texture } from "pixi.js";
+import { Point, Rectangle, Sprite, Text, Texture } from "pixi.js";
 import { useCallback, useEffect, useRef, useState, type Dispatch } from "react";
 import type { SceneAction } from "../reducers/sceneReducer";
 import { useGraphics } from "../hooks/useGraphics";
@@ -100,18 +100,13 @@ export default function GameScene({ visible, coordinator }: Props) {
         }
     }, [grem1, sprites]);
 
-    const nextButtonBackgroundDraw = useCallback(
-        (g: Graphics) => {
-            g.clear();
-            g.setFillStyle(nextButtonBackground);
-            g.setStrokeStyle({ color: 0xfefefe, width: nextButtonStrokeWidth });
-            g.roundRect(0, 0, 100, 40, 6);
-            g.pivot.set(50, 20);
-            g.fill();
-            g.stroke();
-        },
-        [nextButtonStrokeWidth, nextButtonBackground],
-    );
+    const nextButtonBackgroundDraw = useGraphics({
+        color: nextButtonBackground,
+        width: 100,
+        height: 40,
+        radius: 6,
+        stroke: { color: 0xfefefe, width: nextButtonStrokeWidth },
+    });
     const nextButtonClickHandler = useCallback(() => {
         if (gremState !== "idle") return;
         setGremState("exiting");
@@ -124,18 +119,13 @@ export default function GameScene({ visible, coordinator }: Props) {
         radius: 1,
     });
 
-    const textBoxBackgroundDraw = useCallback((g: Graphics) => {
-        g.clear();
-        g.setFillStyle(0x202020);
-        g.roundRect(
-            0,
-            0,
-            (app.canvas.width * 11) / 12,
-            app.canvas.height / 2,
-            4,
-        );
-        g.fill();
-    }, []);
+    const textBoxBackgroundDraw = useGraphics({
+        color: 0x202020,
+        width: (app.canvas.width * 11) / 12,
+        height: app.canvas.height / 4,
+        pivot: new Point(app.canvas.width / 2, 0),
+        radius: 4,
+    });
 
     const pauseButtonClickHandler = useCallback((_ev: MouseEvent) => {
         coordinator({ name: "swapScene", value: "pauseSceneActive" });
@@ -150,7 +140,8 @@ export default function GameScene({ visible, coordinator }: Props) {
         >
             <pixiContainer x={20} y={20}>
                 <pixiGraphics
-                    pivot={{ x: 0, y: 0 }}
+                    pivot={{ x: app.canvas.width / 2, y: 0 }}
+                    x={app.canvas.width / 2}
                     draw={textBoxBackgroundDraw}
                 />
                 <pixiText

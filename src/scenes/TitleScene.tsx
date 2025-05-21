@@ -1,7 +1,7 @@
 import { useApplication } from "@pixi/react";
-import { Graphics } from "pixi.js";
 import { useCallback, type Dispatch } from "react";
 import type { SceneAction } from "../reducers/sceneReducer";
+import { useGraphics } from "../hooks/useGraphics";
 
 type Props = {
     visible?: boolean;
@@ -11,19 +11,19 @@ type Props = {
 export default function TitleScene({ visible, coordinator }: Props) {
     const { app } = useApplication();
 
-    const labelDrawCallback = useCallback((graphics: Graphics) => {
-        graphics.clear();
-        graphics.setFillStyle({ color: 0x1e1e1e });
-        graphics.roundRect(0, 0, 150, 50, 6);
-        graphics.fill();
-    }, []);
+    const labelDrawCallback = useGraphics({
+        color: 0x1e1e1e,
+        width: 150,
+        height: 50,
+        radius: 6,
+    });
 
-    const buttonDrawCallback = useCallback((graphics: Graphics) => {
-        graphics.clear();
-        graphics.setFillStyle({ color: 0x1e1e1e });
-        graphics.roundRect(0, 0, 100, 50, 8);
-        graphics.fill();
-    }, []);
+    const buttonDrawCallback = useGraphics({
+        color: 0x1e1e1e,
+        width: 100,
+        height: 50,
+        radius: 8,
+    });
 
     const buttonClickHandler = useCallback((_event: MouseEvent) => {
         coordinator({ name: "swapScene", value: "gameSceneActive" });

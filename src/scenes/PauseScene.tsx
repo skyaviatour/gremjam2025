@@ -1,7 +1,8 @@
 import { useCallback, type Dispatch } from "react";
 import type { SceneAction } from "../reducers/sceneReducer";
-import type { Graphics } from "pixi.js";
+import { Point } from "pixi.js";
 import { useApplication } from "@pixi/react";
+import { useGraphics } from "../hooks/useGraphics";
 
 type Props = {
     visible?: boolean;
@@ -10,13 +11,13 @@ type Props = {
 
 export default function PauseScene({ visible, coordinator }: Props) {
     const { app } = useApplication();
-    const unpauseButtonBackgroundDraw = useCallback((g: Graphics) => {
-        g.clear();
-        g.setFillStyle(0x101010);
-        g.roundRect(0, 0, 120, 40, 8);
-        g.fill();
-        g.pivot.set(60, 20);
-    }, []);
+    const unpauseButtonBackgroundDraw = useGraphics({
+        color: 0x101010,
+        width: 120,
+        height: 40,
+        radius: 8,
+        pivot: new Point(60, 20),
+    });
 
     const unpauseButtonClickHandler = useCallback((_ev: MouseEvent) => {
         coordinator({ name: "swapScene", value: "gameSceneActive" });

@@ -1,4 +1,4 @@
-import type { FillInput, Graphics, Point } from "pixi.js";
+import type { FillInput, Graphics, Point, StrokeInput } from "pixi.js";
 import { useCallback } from "react";
 
 type Options = {
@@ -7,6 +7,7 @@ type Options = {
     width: number;
     radius?: number;
     pivot?: Point;
+    stroke?: StrokeInput;
 };
 
 export function useGraphics(options: Options) {
@@ -20,6 +21,10 @@ export function useGraphics(options: Options) {
                 options.pivot?.x ?? options.width / 2,
                 options.pivot?.y ?? options.height / 2,
             );
+            if (options.stroke != null) {
+                g.setStrokeStyle(options.stroke);
+                g.stroke();
+            }
         },
         [options],
     );
