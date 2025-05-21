@@ -1,16 +1,17 @@
+import "@pixi/layout/devtools";
 import { Application, extend } from "@pixi/react";
-import { Assets, BitmapText, Container, Graphics, Sprite } from "pixi.js";
+import { Assets, Container, Graphics, Sprite, Text } from "pixi.js";
 import TitleScene from "./scenes/TitleScene";
 import GameScene from "./scenes/GameScene";
-import { useReducer } from "react";
+import { useEffect, useReducer } from "react";
 import { sceneReducer } from "./reducers/sceneReducer";
 import PauseScene from "./scenes/PauseScene";
 
 extend({
+    Text,
     Container,
     Graphics,
     Sprite,
-    BitmapText,
 });
 
 function App() {
@@ -20,8 +21,10 @@ function App() {
         pauseSceneActive: false,
     });
 
-    Assets.init({ basePath: "assets", manifest: "/assets/manifest.json" });
-    Assets.backgroundLoadBundle(["bundle"]);
+    useEffect(() => {
+        Assets.init({ basePath: "assets", manifest: "/assets/manifest.json" });
+        Assets.backgroundLoadBundle(["bundle"]);
+    }, []);
 
     return (
         <Application

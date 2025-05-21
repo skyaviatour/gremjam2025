@@ -953,6 +953,21 @@
   resolved "https://registry.yarnpkg.com/@pixi/colord/-/colord-2.9.6.tgz#7e4e7851480da6fd3cef4e331f008d60be7e1204"
   integrity sha512-nezytU2pw587fQstUu1AsJZDVEynjskwOL+kibwcdxsMBFqPsFFNA7xl0ii/gXuDi6M0xj3mfRJj8pBSc2jCfA==
 
+"@pixi/layout@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@pixi/layout/-/layout-3.0.2.tgz#387ed8e0711893af3c628798f80da4ffc64932eb"
+  integrity sha512-xZwGWhpRa7c/gnbTsN9lguDH1qVQBlqppFbsgU8EpDoSJOw3JqODnCPebeEi5ZzL3KiCz3MW1bYaUrPjeKAJnQ==
+  optionalDependencies:
+    "@pixi/react" "^8.0.0"
+
+"@pixi/react@^8.0.0":
+  version "8.0.2"
+  resolved "https://registry.yarnpkg.com/@pixi/react/-/react-8.0.2.tgz#d58288b2405cc4f40733297b9d55d016d74045bd"
+  integrity sha512-A42Bw/1YlxxCXhb+nDIgzPpACx5dOh7Yi+ZfBMlZ1sBB/qc7qyX9k7bdDtrnMqz8OofyF2FXg9gPw9MISFsQTA==
+  dependencies:
+    its-fine "^2.0.0"
+    react-reconciler "0.31.0"
+
 "@pixi/react@^8.0.0-beta.25":
   version "8.0.0-beta.25"
   resolved "https://registry.yarnpkg.com/@pixi/react/-/react-8.0.0-beta.25.tgz#02bfc1bcd6f9b629a49bde02996cd31700a2f6b1"
@@ -1354,7 +1369,7 @@
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-19.1.5.tgz#cdfe2c663742887372f54804b16e8dbc26bd794a"
   integrity sha512-CMCjrWucUBZvohgZxkjd6S9h0nZxXjzus6yDfUb+xLxYM7VvjKNH1tQrE9GWLql1XoOP4/Ds3bwFqShHUYraGg==
 
-"@types/react-reconciler@^0.28.0":
+"@types/react-reconciler@^0.28.0", "@types/react-reconciler@^0.28.9":
   version "0.28.9"
   resolved "https://registry.yarnpkg.com/@types/react-reconciler/-/react-reconciler-0.28.9.tgz#d24b4864c384e770c83275b3fe73fba00269c83b"
   integrity sha512-HHM3nxyUZ3zAylX8ZEyrDNd2XZOnQ0D5XfunJF5FLQnZbHHYq4UWvW1QfelQNXv1ICNkwYhfxjwfnqivYB6bFg==
@@ -2504,6 +2519,13 @@ its-fine@^1.2.5:
   integrity sha512-fXtDA0X0t0eBYAGLVM5YsgJGsJ5jEmqZEPrGbzdf5awjv0xE7nqv3TVnvtUF060Tkes15DbDAKW/I48vsb6SyA==
   dependencies:
     "@types/react-reconciler" "^0.28.0"
+
+its-fine@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/its-fine/-/its-fine-2.0.0.tgz#a90b18a3ee4c211a1fb6faac2abcc2b682ce1f21"
+  integrity sha512-KLViCmWx94zOvpLwSlsx6yOCeMhZYaxrJV87Po5k/FoZzcPSahvK5qJ7fYhS61sZi5ikmh2S3Hz55A2l3U69ng==
+  dependencies:
+    "@types/react-reconciler" "^0.28.9"
 
 jackspeak@^3.1.2:
   version "3.4.3"
@@ -3703,6 +3725,7 @@ wordwrap@^1.0.0:
   integrity sha512-gvVzJFlPycKc5dZN4yPkP8w7Dc37BtP1yczEneOb4uq34pXZcvrtRTmWV8W+Ume+XCxKgbjM+nevkyFPMybd4Q==
 
 "wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
+  name wrap-ansi-cjs
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
@@ -3810,3 +3833,8 @@ yocto-queue@^1.0.0:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-1.2.1.tgz#36d7c4739f775b3cbc28e6136e21aa057adec418"
   integrity sha512-AyeEbWOu/TAXdxlV9wmGcR0+yh2j3vYPGOECcIj2S7MkrLyC7ne+oye2BKTItt0ii2PHk4cDy+95+LshzbXnGg==
+
+yoga-layout@3:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/yoga-layout/-/yoga-layout-3.2.1.tgz#d2d1ba06f0e81c2eb650c3e5ad8b0b4adde1e843"
+  integrity sha512-0LPOt3AxKqMdFBZA3HBAt/t/8vIKq7VaQYbuA8WxCgung+p9TVyKRYdpvCb80HcdTN2NkbIKbhNwKUfm3tQywQ==
