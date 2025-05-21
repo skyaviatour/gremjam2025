@@ -134,7 +134,6 @@ export default function GameScene({ visible, coordinator }: Props) {
     return (
         <pixiContainer
             renderable={visible ?? true}
-            hitArea={new Rectangle(0, 0, app.canvas.width, app.canvas.height)}
             style={{ fill: 0x00ff00 }}
             isRenderGroup
         >
