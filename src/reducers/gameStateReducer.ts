@@ -1,6 +1,6 @@
 import type { Item, ItemInInventory } from "../types";
 
-type GameState = {
+export type GameState = {
     gold: number;
     items: ItemInInventory[];
 };

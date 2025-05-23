@@ -1,6 +1,13 @@
 import { useApplication } from "@pixi/react";
 import { Point, Sprite, Text, Texture } from "pixi.js";
-import { useCallback, useEffect, useRef, useState, type Dispatch } from "react";
+import {
+    use,
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+    type Dispatch,
+} from "react";
 import type { SceneAction, SceneStatus } from "../reducers/sceneReducer";
 import { useGraphics } from "../hooks/useGraphics";
 import gsap from "gsap";
@@ -8,6 +15,7 @@ import { useGSAP } from "@gsap/react";
 import { useSprites } from "../hooks/useSprites";
 import PauseButton from "../components/PauseButton";
 import StallItem from "../components/StallItem";
+import { GameStateContext } from "../context/gameStateContext";
 
 type Props = {
     status: SceneStatus;
@@ -29,7 +37,8 @@ export default function GameScene({ status, coordinator }: Props) {
     const [stallItemsVisible, setStallItemsVisible] = useState(false);
     const [gremState, setGremState] = useState<
         "entering" | "exiting" | "idle" | null
-    >("entering");
+    >("idle");
+    const gameState = use(GameStateContext);
 
     const grem1Ref = useRef<Sprite>(null);
     const textRef = useRef<Text>(null);
@@ -106,6 +115,7 @@ export default function GameScene({ status, coordinator }: Props) {
     useEffect(() => {
         if (status === "active") {
             setGremState("entering");
+            setStallItems(getRandomItems());
         }
     }, [status]);
 
@@ -130,9 +140,9 @@ export default function GameScene({ status, coordinator }: Props) {
 
     const textBoxBackgroundDraw = useGraphics({
         color: 0x202020,
-        width: (app.canvas.width * 11) / 12,
+        width: (app.canvas.width * 9) / 12,
         height: app.canvas.height / 4,
-        pivot: new Point(app.canvas.width / 2, 0),
+        pivot: new Point(0, 0),
         radius: 4,
     });
 
@@ -146,23 +156,26 @@ export default function GameScene({ status, coordinator }: Props) {
             style={{ fill: 0x00ff00 }}
             isRenderGroup
         >
-            <pixiContainer x={20} y={20}>
-                <pixiGraphics
-                    pivot={{ x: app.canvas.width / 2, y: 0 }}
-                    x={app.canvas.width / 2}
-                    draw={textBoxBackgroundDraw}
-                />
+            <pixiContainer>
+                <pixiGraphics x={10} y={10} draw={textBoxBackgroundDraw} />
                 <pixiText
                     ref={textRef}
-                    x={20}
-                    y={20}
+                    x={30}
+                    y={30}
                     text={""}
                     style={{
                         fill: "white",
                         wordWrap: true,
-                        wordWrapWidth: (app.canvas.width * 11) / 12 - 20,
+                        wordWrapWidth: (app.canvas.width * 9) / 12 - 20,
                     }}
                 />
+            </pixiContainer>
+            <pixiContainer x={(app.canvas.width * 8) / 10} y={40}>
+                <pixiText
+                    style={{ fill: "white" }}
+                    text={gameState?.gold ?? "zero somehow"}
+                />
+                <pixiText style={{ fill: "white" }} y={40} text={"inventory"} />
             </pixiContainer>
             <pixiContainer>
                 <pixiSprite
