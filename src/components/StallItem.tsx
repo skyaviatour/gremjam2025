@@ -79,6 +79,7 @@ export default function StallItem({ item }: Props) {
                 x={randomX}
                 y={randomY}
                 texture={item}
+                eventMode="static"
                 onMouseEnter={useCallback(() => setDetailsVisible(true), [])}
                 onMouseLeave={useCallback(() => setDetailsVisible(false), [])}
             />

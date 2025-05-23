@@ -1,7 +1,7 @@
 import { useApplication } from "@pixi/react";
-import { Point, Rectangle, Sprite, Text, Texture } from "pixi.js";
+import { Point, Sprite, Text, Texture } from "pixi.js";
 import { useCallback, useEffect, useRef, useState, type Dispatch } from "react";
-import type { SceneAction } from "../reducers/sceneReducer";
+import type { SceneAction, SceneStatus } from "../reducers/sceneReducer";
 import { useGraphics } from "../hooks/useGraphics";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -10,7 +10,7 @@ import PauseButton from "../components/PauseButton";
 import StallItem from "../components/StallItem";
 
 type Props = {
-    visible?: boolean;
+    status: SceneStatus;
     coordinator: Dispatch<SceneAction>;
 };
 
@@ -19,18 +19,21 @@ type Props = {
 // for example, execution of the entering animation happens while in the starting
 // screen, but it wouldn't make sense to pause/reset it based on visibility, otherwise
 // pausing would break everything
-export default function GameScene({ visible, coordinator }: Props) {
+export default function GameScene({ status, coordinator }: Props) {
     const { app } = useApplication();
+
     const [grem1, setGrem1] = useState(Texture.EMPTY);
     const [stallItems, setStallItems] = useState<Texture[]>([]);
-    const grem1Ref = useRef<Sprite>(null);
+    const [nextButtonStrokeWidth, setNextButtonStrokeWidth] = useState(2);
+    const [nextButtonBackground, setNextButtonBackground] = useState(0x202020);
     const [stallItemsVisible, setStallItemsVisible] = useState(false);
     const [gremState, setGremState] = useState<
         "entering" | "exiting" | "idle" | null
     >("entering");
+
+    const grem1Ref = useRef<Sprite>(null);
     const textRef = useRef<Text>(null);
-    const [nextButtonStrokeWidth, setNextButtonStrokeWidth] = useState(2);
-    const [nextButtonBackground, setNextButtonBackground] = useState(0x202020);
+
     const { sprites, items } = useSprites({
         bundles: ["bundle"],
     });
@@ -100,6 +103,12 @@ export default function GameScene({ visible, coordinator }: Props) {
         }
     }, [grem1, sprites]);
 
+    useEffect(() => {
+        if (status === "active") {
+            setGremState("entering");
+        }
+    }, [status]);
+
     const nextButtonBackgroundDraw = useGraphics({
         color: nextButtonBackground,
         width: 100,
@@ -128,12 +137,12 @@ export default function GameScene({ visible, coordinator }: Props) {
     });
 
     const pauseButtonClickHandler = useCallback((_ev: MouseEvent) => {
-        coordinator({ name: "swapScene", value: "pauseSceneActive" });
+        coordinator({ name: "pause", currentScene: "gameScene" });
     }, []);
 
     return (
         <pixiContainer
-            renderable={visible ?? true}
+            renderable={status === "active"}
             style={{ fill: 0x00ff00 }}
             isRenderGroup
         >

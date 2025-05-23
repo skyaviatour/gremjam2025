@@ -16,9 +16,9 @@ extend({
 
 function App() {
     const [state, dispatch] = useReducer(sceneReducer, {
-        titleSceneActive: true,
-        gameSceneActive: false,
-        pauseSceneActive: false,
+        gameScene: { status: "inactive" },
+        pauseScene: { status: "inactive" },
+        titleScene: { status: "active" },
     });
 
     useEffect(() => {
@@ -27,19 +27,14 @@ function App() {
     }, []);
 
     return (
-        <Application
-            width={800}
-            height={600}
-            background="#3f3f3f"
-            eventMode="static"
-        >
+        <Application width={800} height={600} background="#3f3f3f">
             <TitleScene
-                visible={state.titleSceneActive}
+                status={state.titleScene.status}
                 coordinator={dispatch}
             />
-            <GameScene visible={state.gameSceneActive} coordinator={dispatch} />
+            <GameScene status={state.gameScene.status} coordinator={dispatch} />
             <PauseScene
-                visible={state.pauseSceneActive}
+                status={state.pauseScene.status}
                 coordinator={dispatch}
             />
         </Application>

@@ -1,14 +1,14 @@
 import { useApplication } from "@pixi/react";
 import { useCallback, type Dispatch } from "react";
-import type { SceneAction } from "../reducers/sceneReducer";
+import type { SceneAction, SceneStatus } from "../reducers/sceneReducer";
 import { useGraphics } from "../hooks/useGraphics";
 
 type Props = {
-    visible?: boolean;
+    status: SceneStatus;
     coordinator: Dispatch<SceneAction>;
 };
 
-export default function TitleScene({ visible, coordinator }: Props) {
+export default function TitleScene({ status, coordinator }: Props) {
     const { app } = useApplication();
 
     const labelDrawCallback = useGraphics({
@@ -26,11 +26,15 @@ export default function TitleScene({ visible, coordinator }: Props) {
     });
 
     const buttonClickHandler = useCallback((_event: MouseEvent) => {
-        coordinator({ name: "swapScene", value: "gameSceneActive" });
+        coordinator({
+            name: "swapScene",
+            sceneName: "gameScene",
+            previousScene: "titleScene",
+        });
     }, []);
 
     return (
-        <pixiContainer renderable={visible ?? true} isRenderGroup>
+        <pixiContainer renderable={status === "active"} isRenderGroup>
             <pixiContainer x={app.canvas.width / 2} y={app.canvas.height / 4}>
                 <pixiGraphics
                     draw={labelDrawCallback}
